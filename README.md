@@ -1,376 +1,619 @@
-# azure-synapse-nyc-taxi-data-engineering
 # 🚕 Azure Synapse NYC Taxi Data Engineering Project
-
-![Azure](https://img.shields.io/badge/Azure-Synapse%20Analytics-0078D4)
-![SQL](https://img.shields.io/badge/SQL-T--SQL-blue)
-![PySpark](https://img.shields.io/badge/PySpark-Apache%20Spark-orange)
-![ADLS Gen2](https://img.shields.io/badge/Storage-ADLS%20Gen2-0078D4)
-![Data Engineering](https://img.shields.io/badge/Focus-Data%20Engineering-green)
 
 ## 📌 Project Overview
 
-This project demonstrates an end-to-end data engineering workflow for analyzing **New York City Taxi trip data using Microsoft Azure Synapse Analytics**.
+This project demonstrates an end-to-end **data engineering solution for New York City Green Taxi trip data using Microsoft Azure Synapse Analytics and Azure Data Lake Storage Gen2**.
 
-The project focuses on ingesting, exploring, transforming, and analyzing taxi trip data using Azure cloud data services and SQL-based analytics.
+The project covers the complete data lifecycle from raw data exploration and external data access through **Bronze, Silver, and Gold data layers**, data cleansing, quality validation, joins, stored procedures, views, aggregations, and analytical datasets.
 
-The solution demonstrates practical concepts including:
-
-* Azure Synapse Analytics
-* Azure Data Lake Storage Gen2
-* Serverless SQL
-* Apache Spark / PySpark
-* SQL-based data analysis
-* Data transformation
-* Data quality validation
-* Cloud data architecture
+The implementation combines **Synapse Serverless SQL and Apache Spark** to demonstrate practical cloud data engineering patterns.
 
 ---
 
 ## 🎯 Project Objectives
 
-The main objectives of this project are to:
+The primary objectives of this project are to:
 
-1. Store NYC Taxi data in Azure Data Lake Storage Gen2.
-2. Connect Azure Synapse Analytics to the data lake.
-3. Explore raw data using Synapse SQL.
-4. Perform data transformations and cleansing.
-5. Analyze taxi trips using SQL and Spark.
-6. Generate business-oriented analytical insights.
-7. Demonstrate an Azure-based data engineering architecture.
+* Store and process NYC Taxi data in Azure Data Lake Storage Gen2.
+* Explore raw CSV, Parquet, and Delta-format data.
+* Query files using Synapse Serverless SQL.
+* Create external data sources and external file formats.
+* Build Bronze-layer external tables/views.
+* Transform and cleanse data into Silver-layer datasets.
+* Create reusable stored procedures for transformations.
+* Perform joins between fact and reference datasets.
+* Implement data-quality and duplicate checks.
+* Create Gold-layer analytical datasets and views.
+* Perform aggregations for analytical use cases.
+* Use Synapse Spark for distributed data processing.
 
 ---
 
-## 🏗️ Architecture
+# 🏗️ Architecture
 
 ```text
-                    NYC TAXI DATA
-                          │
-                          ▼
-                Azure Data Lake Storage Gen2
-                          │
-                          ▼
-                Azure Synapse Analytics
-                          │
-             ┌────────────┴────────────┐
-             │                         │
-             ▼                         ▼
-       Serverless SQL             Apache Spark
-             │                         │
-             ▼                         ▼
-       Data Exploration          Transformation
-             │                         │
-             └────────────┬────────────┘
-                          ▼
-                   Curated Dataset
-                          │
-                          ▼
-                    SQL Analytics
-                          │
-                          ▼
-                    Data Insights
+                    NYC GREEN TAXI DATA
+                             │
+                             ▼
+                  Azure Data Lake Storage Gen2
+                             │
+              ┌──────────────┴──────────────┐
+              │                             │
+              ▼                             ▼
+       CSV / Parquet / Delta          Reference Data
+              │                             │
+              └──────────────┬──────────────┘
+                             ▼
+                 Azure Synapse Analytics
+                             │
+              ┌──────────────┴──────────────┐
+              │                             │
+              ▼                             ▼
+        Serverless SQL                Synapse Spark
+              │                             │
+              ▼                             ▼
+        🥉 BRONZE LAYER              Spark Processing
+              │
+              ▼
+        🥈 SILVER LAYER
+              │
+       ┌──────┼────────┐
+       │      │        │
+       ▼      ▼        ▼
+    Cleansing Joins  Data Quality
+       │      │        │
+       └──────┼────────┘
+              ▼
+         🥇 GOLD LAYER
+              │
+              ▼
+       Views / Aggregations
+              │
+              ▼
+       Analytical Datasets
 ```
 
-> The architecture diagram above represents the main logical flow of the project. Implementation details may vary depending on the Synapse components used.
+---
+
+# ☁️ Azure Architecture Components
+
+| Component                    | Purpose                                      |
+| ---------------------------- | -------------------------------------------- |
+| Azure Data Lake Storage Gen2 | Stores raw and processed data                |
+| Azure Synapse Analytics      | Cloud analytics and data processing          |
+| Synapse Serverless SQL       | Queries data directly from the data lake     |
+| Synapse Spark                | Distributed data processing                  |
+| Synapse SQL Scripts          | Data definition, transformation and analysis |
+| Synapse Pipelines            | Orchestrates processing activities           |
+| Synapse Datasets             | Defines data inputs and outputs              |
+| Linked Services              | Provides connections to data sources         |
+| Integration Runtime          | Supports data integration activities         |
+| Triggers                     | Supports pipeline execution                  |
 
 ---
 
-## 🛠️ Technologies Used
+# 📂 Data Sources
 
-| Technology                   | Purpose                           |
-| ---------------------------- | --------------------------------- |
-| Microsoft Azure              | Cloud platform                    |
-| Azure Synapse Analytics      | Analytics and data processing     |
-| Azure Data Lake Storage Gen2 | Data storage                      |
-| Serverless SQL               | Querying data in the data lake    |
-| Apache Spark                 | Distributed data processing       |
-| PySpark                      | Data transformation               |
-| SQL / T-SQL                  | Data analysis                     |
-| Git / GitHub                 | Version control and documentation |
+The project works primarily with **NYC Green Taxi trip data** and supporting reference datasets.
+
+The repository includes exploration and processing scripts for:
+
+* Green Taxi trip data
+* Taxi zone data
+* Calendar data
+* Vendor information
+* Payment type
+* Rate code
+* Trip type
+* Reference/lookup data
+
+The original large datasets are **not stored in this repository**.
 
 ---
 
-## 📂 Dataset
+# 🔄 Data Engineering Workflow
 
-The project uses **New York City Taxi trip data**.
+## 1. Raw Data Exploration
 
-The dataset contains information related to taxi trips and can be used to analyze:
+The first stage focuses on understanding the source data.
 
-* Trip distance
-* Passenger count
-* Pickup and drop-off information
-* Payment information
-* Fare amounts
-* Total trip cost
-* Trip duration
+The SQL scripts include exploration of:
+
 * Taxi zones
+* Calendar attributes
+* Vendor information
+* Payment types
+* Rate codes
+* Green Taxi CSV data
+* Green Taxi Parquet data
+* Green Taxi Delta data
 
-The original dataset is not stored in this GitHub repository because of its size.
+This establishes an understanding of the raw schema and available attributes before transformation.
 
 ---
 
-## 🔄 Data Engineering Workflow
+# 🥉 Bronze Layer
 
-### Step 1 — Data Ingestion
+The Bronze layer represents the raw data with minimal transformation.
 
-Raw NYC Taxi data is stored in Azure Data Lake Storage Gen2.
+The project creates:
+
+* External data sources
+* External file formats
+* External Bronze tables
+* Bronze views
+
+This allows Synapse Serverless SQL to query data stored in ADLS Gen2 without requiring the complete dataset to be loaded into a traditional relational table.
+
+### Bronze workflow
 
 ```text
-NYC Taxi Data
-      ↓
-Azure Data Lake Storage Gen2
+Raw Files in ADLS Gen2
+        │
+        ▼
+External Data Source
+        │
+        ▼
+External File Format
+        │
+        ▼
+Bronze External Tables
+        │
+        ▼
+Bronze Views
 ```
-
-### Step 2 — Data Exploration
-
-Azure Synapse Serverless SQL is used to query and explore data directly from the data lake.
-
-Key activities include:
-
-* Schema inspection
-* Row-level exploration
-* Data profiling
-* Null-value analysis
-* Duplicate detection
-* Basic aggregations
-
-### Step 3 — Data Transformation
-
-Data is transformed using SQL and/or Apache Spark.
-
-Transformation activities include:
-
-* Data type conversion
-* Handling invalid records
-* Filtering invalid trips
-* Column selection
-* Derived columns
-* Aggregations
-
-### Step 4 — Data Analysis
-
-SQL queries are used to answer business questions related to:
-
-* Average trip distance
-* Passenger distribution
-* Total fares
-* Trip volume
-* Payment methods
-* Taxi usage patterns
-* Revenue-related metrics
 
 ---
 
-## 🧹 Data Quality Checks
+# 🥈 Silver Layer
 
-The project includes validation checks such as:
+The Silver layer contains cleansed, standardized and transformed datasets.
 
-* Null-value detection
-* Invalid trip distances
-* Invalid passenger counts
-* Negative or invalid fare values
-* Duplicate records
-* Missing required fields
+The project creates Silver objects for:
+
+* Green Taxi trip data
+* Taxi zones
+* Calendar
+* Vendor
+* Payment type
+* Trip type
+* Rate code
+
+Transformation logic includes:
+
+* Data cleansing
+* Data type handling
+* Filtering
+* Joining
+* Standardization
+* Derived attributes
+* Data-quality validation
+
+---
+
+# 🧹 Data Quality
+
+Data quality is an important part of the project.
+
+The SQL implementation includes dedicated scripts for:
+
+* Duplicate detection
+* Data-quality checks
+* Invalid records
+* Missing or unexpected values
+* Validation of transformed data
 
 Example:
 
 ```sql
-SELECT COUNT(*) AS invalid_trips
-FROM taxi_data
+-- Example data-quality validation
+
+SELECT
+    COUNT(*) AS invalid_records
+FROM silver_trip_data
 WHERE trip_distance <= 0;
 ```
 
----
-
-## 📊 Business Questions
-
-The project investigates questions such as:
-
-### 1. What is the average trip distance?
-
-### 2. How does passenger count affect trip distance?
-
-### 3. What are the most common payment methods?
-
-### 4. Which taxi trips generate the highest revenue?
-
-### 5. What is the distribution of trip distances?
-
-### 6. How many trips contain invalid or missing values?
-
-### 7. What are the most frequently used pickup and drop-off locations?
+The exact validation rules depend on the source dataset and transformation requirements.
 
 ---
 
-## 🗄️ SQL Analysis
+# 🔗 Data Integration and Joins
 
-Example analytical query:
+Reference datasets are joined with the main Green Taxi trip data to enrich the analytical dataset.
 
-```sql
-SELECT
-    passenger_count,
-    COUNT(*) AS total_trips,
-    AVG(trip_distance) AS avg_trip_distance,
-    SUM(total_amount) AS total_revenue
-FROM taxi_data
-WHERE passenger_count > 0
-  AND trip_distance > 0
-GROUP BY passenger_count
-ORDER BY passenger_count;
+Examples include relationships between:
+
+```text
+Green Taxi Trips
+       │
+       ├── Taxi Zone
+       ├── Calendar
+       ├── Vendor
+       ├── Payment Type
+       ├── Trip Type
+       └── Rate Code
+```
+
+This produces a more useful analytical model than relying on the raw trip data alone.
+
+---
+
+# 🥇 Gold Layer
+
+The Gold layer contains analytics-ready datasets and views.
+
+The project creates Gold objects for Green Taxi data and includes:
+
+* Gold trip data
+* Gold views
+* Aggregated trip datasets
+* Analytical queries
+
+The Gold layer is designed for downstream analytics and reporting.
+
+---
+
+# ⚙️ Stored Procedures
+
+The project uses stored procedures to encapsulate transformation logic.
+
+Stored procedures are implemented for operations including:
+
+* Silver trip-data creation
+* Taxi-zone processing
+* Calendar processing
+* Trip-type processing
+* Vendor processing
+* Payment-type processing
+* Rate-code processing
+* Gold trip-data creation
+
+This demonstrates reusable SQL transformation logic rather than placing all processing into one large script.
+
+---
+
+# 📊 CTAS and Aggregation
+
+The project also demonstrates **CTAS — CREATE TABLE AS SELECT** for creating analytical datasets from transformed data.
+
+Example use case:
+
+```text
+Silver Trip Data
+       │
+       ▼
+Aggregation
+       │
+       ▼
+CTAS
+       │
+       ▼
+Gold Analytical Dataset
+```
+
+This approach is useful for creating optimized analytical structures from transformed data.
+
+---
+
+# ⚡ Apache Spark
+
+The project also contains a Synapse Spark notebook for creating an aggregated Gold dataset.
+
+The notebook demonstrates how Spark can be used alongside Synapse SQL for distributed data processing.
+
+```text
+NYC Taxi Data
+      │
+      ▼
+Synapse Spark
+      │
+      ▼
+Distributed Processing
+      │
+      ▼
+Aggregated Dataset
 ```
 
 ---
 
-## 🔥 Spark / PySpark
+# 🔄 Synapse Pipelines
 
-Apache Spark can be used for distributed processing of the NYC Taxi dataset.
+The repository contains Synapse pipelines that orchestrate different stages of the transformation process.
 
-Example:
+Key pipelines include:
 
-```python
-df = spark.read.parquet("<ADLS_PATH>")
-
-df_clean = (
-    df
-    .filter("trip_distance > 0")
-    .filter("passenger_count > 0")
-)
-
-display(df_clean.limit(10))
+```text
+pl_execute_all_pipeline
+        │
+        ├── pl_create_silver_tables
+        ├── pl_create_silver_taxi_zone
+        ├── pl_create_silver_taxi_zone_usp
+        ├── pl_create_silver_trip_data_green
+        ├── pl_create_gold_trip_data_green
+        └── pl_create_gold_trip_data_agg
 ```
 
----
-
-## 📈 Key Insights
-
-The project produces analytical insights related to:
-
-* Taxi trip patterns
-* Passenger behavior
-* Trip distance
-* Revenue
-* Payment methods
-* Data quality
-* Geographic trip patterns
-
-> Add your actual findings here after completing the analysis. Avoid adding estimated results.
+These pipelines demonstrate orchestration of the data-engineering workflow inside Azure Synapse.
 
 ---
 
-## 📸 Screenshots
+# 🧩 Synapse SQL Implementation
 
-### Azure Synapse Workspace
+The repository contains SQL scripts covering the complete transformation lifecycle.
 
-![Synapse Workspace](screenshots/synapse-workspace.png)
+### Database and External Objects
 
-### Serverless SQL Query
-
-![Serverless SQL](screenshots/serverless-sql.png)
+```text
+1_create_databases
+2_create_external_data_sources
+3_create_external_file_format
+4_create_external_bronze_tables
+5_create_bronze_view
+```
 
 ### Data Exploration
 
-![Data Explorer](screenshots/data-explorer.png)
-
-### Query Results
-
-![Query Results](screenshots/query-results.png)
-
----
-
-## 📁 Repository Structure
-
 ```text
-├── architecture/
-├── data/
-├── synapse/
-│   ├── serverless-sql/
-│   ├── spark/
-│   └── pipelines/
-├── sql/
-├── screenshots/
-├── docs/
-├── .gitignore
-├── LICENSE
-└── README.md
+SQL taxi zone exploration
+Calendar exploration
+Vendor exploration
+Payment type exploration
+Rate code exploration
+Green Taxi CSV exploration
+Green Taxi Parquet exploration
+Green Taxi Delta exploration
 ```
 
+### Silver Layer
+
+```text
+Silver Taxi Zone
+Silver Calendar
+Silver Trip Type
+Silver Rate Code
+Silver Vendor
+Silver Payment Type
+Silver Trip Data
+```
+
+### Data Quality
+
+```text
+Duplicate detection
+Data-quality checks
+File joining
+```
+
+### Gold Layer
+
+```text
+Gold Trip Data
+Gold Views
+Gold Aggregations
+CTAS analytical datasets
+```
+
+The repository currently contains a substantial collection of these SQL scripts.
+
 ---
 
-## 🚀 How to Reproduce the Project
+# 📁 Repository Structure
 
-### Prerequisites
+```text
+azure-synapse-nyc-taxi-data-engineering/
+│
+├── credential/
+│
+├── dataset/
+│
+├── integrationRuntime/
+│
+├── linkedService/
+│
+├── notebook/
+│   └── 1_spark_create_gold_trip_data_green_agg.json
+│
+├── pipeline/
+│   ├── pl_create_gold_trip_data_agg.json
+│   ├── pl_create_gold_trip_data_green_.json
+│   ├── pl_create_silver_tables.json
+│   ├── pl_create_silver_taxi_zone.json
+│   ├── pl_create_silver_taxi_zone_usp.json
+│   ├── pl_create_silver_trip_data_green.json
+│   └── pl_execute_all_pipeline.json
+│
+├── sqlscript/
+│   ├── Database setup
+│   ├── External data sources
+│   ├── External file formats
+│   ├── Bronze objects
+│   ├── Silver transformations
+│   ├── Stored procedures
+│   ├── Data-quality checks
+│   ├── Joins
+│   ├── Gold objects
+│   └── Analytical queries
+│
+├── trigger/
+│
+├── README.md
+│
+└── publish_config.json
+```
 
-You will need:
+The current repository contains these Synapse artifact categories at the root, including datasets, integration runtime, linked services, notebooks, pipelines, SQL scripts, triggers and configuration files.
 
-* Microsoft Azure subscription
-* Azure Synapse Analytics workspace
+---
+
+# 🛠️ Technologies Used
+
+* Microsoft Azure
+* Azure Synapse Analytics
 * Azure Data Lake Storage Gen2
 * Synapse Serverless SQL
-* Apache Spark / PySpark if Spark processing is used
-* Git / GitHub
-
-### Setup
-
-1. Create an Azure Data Lake Storage Gen2 account.
-2. Upload the NYC Taxi dataset to the appropriate storage location.
-3. Create or configure an Azure Synapse Analytics workspace.
-4. Configure access between Synapse and the storage account.
-5. Run the SQL scripts in `synapse/serverless-sql/`.
-6. Run the Spark/PySpark notebooks or scripts if applicable.
-7. Execute the analytical queries in `sql/`.
-8. Review the generated results and insights.
+* Apache Spark
+* PySpark / Spark notebooks
+* T-SQL
+* SQL Stored Procedures
+* CTAS
+* External Tables
+* External Data Sources
+* External File Formats
+* Git
+* GitHub
 
 ---
 
-## 🔐 Security
+# 📚 Key Data Engineering Concepts Demonstrated
 
-No Azure credentials, access keys, passwords, SAS tokens, connection strings, or other secrets are stored in this repository.
+This project demonstrates practical knowledge of:
 
-All sensitive configuration values must be kept outside source control.
-
----
-
-## 📚 Key Data Engineering Concepts Demonstrated
-
-* Cloud data storage
-* Data lake architecture
+* Cloud data lakes
 * Azure Synapse Analytics
 * Serverless SQL
-* Apache Spark
-* PySpark
-* SQL analytics
-* Data cleansing
-* Data quality
+* External tables
+* External data sources
+* External file formats
+* Bronze-Silver-Gold architecture
 * Data transformation
-* Data exploration
-* Analytical data processing
-* Git and GitHub
+* Data cleansing
+* Data-quality validation
+* Duplicate detection
+* SQL joins
+* Stored procedures
+* CTAS
+* Analytical aggregations
+* Views
+* Spark processing
+* Pipeline orchestration
+* Data modeling
+* Reference/lookup data integration
 
 ---
 
-## 🔮 Future Improvements
+# 📈 Analytical Use Cases
 
-Potential future enhancements include:
+The transformed NYC Taxi data can support analysis such as:
+
+* Trip volume
+* Trip distance
+* Passenger behavior
+* Fare and revenue analysis
+* Payment-method distribution
+* Vendor analysis
+* Trip-type analysis
+* Taxi-zone analysis
+* Time-based trip patterns
+* Aggregated trip metrics
+
+---
+
+# 🚀 How to Reproduce
+
+## Prerequisites
+
+You need:
+
+* Azure subscription
+* Azure Synapse Analytics workspace
+* ADLS Gen2 storage account
+* NYC Green Taxi dataset
+* Synapse Serverless SQL access
+* Synapse Spark capability if running the Spark notebook
+
+## High-Level Setup
+
+1. Create an ADLS Gen2 storage account.
+2. Upload the NYC Green Taxi source files.
+3. Create an Azure Synapse Analytics workspace.
+4. Configure the required Linked Services.
+5. Configure datasets and storage paths.
+6. Configure the Synapse SQL environment.
+7. Create the external data sources.
+8. Create the external file formats.
+9. Create Bronze-layer objects.
+10. Execute Silver-layer transformation scripts.
+11. Run data-quality checks.
+12. Execute the Gold-layer transformations.
+13. Run the analytical aggregation.
+14. Execute the Synapse pipelines.
+15. Run the Spark notebook where required.
+16. Validate the final analytical datasets.
+
+---
+
+# 🔐 Security
+
+This repository is intended to contain **code and Synapse project artifacts, not secrets**.
+
+Never commit:
+
+* Azure access keys
+* Storage account keys
+* SAS tokens
+* Passwords
+* Client secrets
+* Connection strings containing credentials
+* Authentication tokens
+
+Use placeholders or secure Azure configuration mechanisms instead.
+
+> Before publishing or sharing the repository, verify that the `credential/` directory and configuration files contain no active secrets.
+
+---
+
+# 🔮 Future Improvements
+
+Potential improvements include:
 
 * Azure Data Factory orchestration
-* Incremental data processing
-* Delta Lake
-* Medallion architecture
-* Automated data quality checks
-* Power BI dashboard
-* CI/CD
+* Incremental data loading
+* Automated data-quality framework
+* Metadata-driven pipelines
+* Power BI reporting layer
+* CI/CD using GitHub Actions or Azure DevOps
 * Infrastructure as Code
-* Monitoring and logging
+* Monitoring and alerting
+* Performance optimization
+* Partitioning strategies
+* Additional Spark transformations
+* Production-style parameterization
 
 ---
 
-## 👨‍💻 Author
+# 👨‍💻 Author
 
-**Shubham Prakash Jamdhade**
+## Shubham Jamdhade
 
-Aspiring Azure Data Engineer
+** Azure Data Engineer**
 
-**Core Skills:** Python | SQL | PySpark | Azure Data Factory | Azure Databricks | ADLS Gen2 | Delta Lake | Azure Synapse Analytics
+### Core Skills
+
+`Python` · `SQL` · `PySpark` · `Azure Data Factory` · `Azure Databricks` · `ADLS Gen2` · `Delta Lake` · `Azure Synapse Analytics`
 
 ---
 
-⭐ If you find this project useful, consider giving the repository a star.
+## ⭐ Project Highlights
+
+This project demonstrates how a raw cloud-based dataset can be transformed into structured, analytics-ready data using Azure Synapse.
+
+```text
+RAW DATA
+   ↓
+ADLS Gen2
+   ↓
+BRONZE
+   ↓
+SILVER
+   ↓
+DATA QUALITY + JOINS
+   ↓
+GOLD
+   ↓
+AGGREGATIONS
+   ↓
+ANALYTICS
+```
+
+⭐ If you find this project useful, feel free to star the repository.
