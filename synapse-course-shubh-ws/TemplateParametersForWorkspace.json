@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "synapse-course-shubh-ws"
+		},
+		"synapse-course-shubh-ws-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:synapse-course-shubh-ws.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"ls_severless_sql_pool_db_nyc_taxi_ldw_properties_typeProperties_server": {
+			"value": "tcp:synapse-course-shubh-ws-ondemand.sql.azuresynapse.net,1433"
+		},
+		"ls_severless_sql_pool_db_nyc_taxi_ldw_properties_typeProperties_database": {
+			"value": "nyc_taxi_ldw"
+		},
+		"ls_synapsecourse_dl_properties_typeProperties_url": {
+			"value": "https://adlscoursesynapse.dfs.core.windows.net/"
+		},
+		"synapse-course-shubh-ws-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://adlscoursesynapse.dfs.core.windows.net"
+		}
+	}
+}
