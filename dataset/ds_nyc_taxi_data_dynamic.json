@@ -1,0 +1,46 @@
+{
+	"name": "ds_nyc_taxi_data_dynamic",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_synapsecourse_dl",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"p_folder_path": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": {
+					"value": "@dataset().p_folder_path",
+					"type": "Expression"
+				},
+				"fileSystem": "nyc-taxi-green-data"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "LocationID",
+				"type": "INT_16"
+			},
+			{
+				"name": "Borough",
+				"type": "UTF8"
+			},
+			{
+				"name": "Zone",
+				"type": "UTF8"
+			},
+			{
+				"name": "service_zone",
+				"type": "UTF8"
+			}
+		]
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

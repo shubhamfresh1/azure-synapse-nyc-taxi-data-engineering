@@ -1,0 +1,20 @@
+{
+	"name": "1_create_CTAS_trip_data_green_agg",
+	"properties": {
+		"folder": {
+			"name": "nyc-taxi/dwh"
+		},
+		"content": {
+			"query": "CREATE SCHEMA staging;\nGO\n\nIF NOT EXISTS (\n    SELECT *\n    FROM sys.external_file_formats\n    WHERE name = 'parquet_file_format'\n)\nCREATE EXTERNAL FILE FORMAT parquet_file_format\nWITH (\n    FORMAT_TYPE = PARQUET\n);\nGO\n\nIF NOT EXISTS (\n    SELECT *\n    FROM sys.external_data_sources\n    WHERE name = 'nyc-taxi-green-data_src'\n)\nCREATE EXTERNAL DATA SOURCE nyc_taxi_green_data_src\nWITH (\n    LOCATION = 'abfss://nyc-taxi-green-data@adlscoursesynapse.dfs.core.windows.net'\n);\nGO\n\nCREATE EXTERNAL TABLE staging.ext_trip_data_green_agg\n(\n    [pu_location_id] INT,\n    [do_location_id] INT,\n    [total_trip_count] BIGINT,\n    [total_fare_amount] FLOAT\n)\nWITH (\n    LOCATION = 'gold/trip_data_green_agg',\n    DATA_SOURCE = nyc_taxi_green_data_src,\n    FILE_FORMAT = parquet_file_format\n);\nGO\n\nSELECT TOP 100 *\nFROM staging.ext_trip_data_green_agg;\nGO\n\nCREATE SCHEMA dwh\nGO\n\nCREATE TABLE dwh.trip_data_green_agg\nWITH   \n  (   \n    CLUSTERED COLUMNSTORE INDEX,  \n    DISTRIBUTION = ROUND_ROBIN  \n  )  \nAS SELECT * FROM staging.ext_trip_data_green_agg;\n\nSELECT * FROM dwh.trip_data_green_agg;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_dwh",
+				"poolName": "nyc_taxi_dwh"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

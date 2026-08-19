@@ -1,0 +1,20 @@
+{
+	"name": "usp_silver_payment_type",
+	"properties": {
+		"folder": {
+			"name": "nyc-taxi/ldw/usp"
+		},
+		"content": {
+			"query": "USE nyc_taxi_ldw;\nGO\n\nCREATE OR ALTER PROCEDURE silver.usp_silver_payment_type\nAS\nBEGIN\n    SET NOCOUNT ON;\n\n    -- Drop existing external table\n    IF OBJECT_ID('silver.payment_type') IS NOT NULL\n    BEGIN\n        DROP EXTERNAL TABLE silver.payment_type;\n    END;\n\n    -- Create External Table As Select (CTAS)\n    CREATE EXTERNAL TABLE silver.payment_type\n    WITH\n    (\n        DATA_SOURCE = nyc_taxi_src,\n        LOCATION = 'silver/payment_type',\n        FILE_FORMAT = parquet_file_format\n    )\n    AS\n    SELECT\n        payment_type,\n        description\n    FROM OPENROWSET\n    (\n        BULK 'raw/payment_type.json',\n        DATA_SOURCE = 'nyc_taxi_src',\n        FORMAT = 'CSV',\n        FIELDTERMINATOR = '0x0b',\n        FIELDQUOTE = '0x0b'\n    )\n    WITH\n    (\n        jsonDoc NVARCHAR(MAX)\n    ) AS payment_type\n    CROSS APPLY OPENJSON(jsonDoc)\n    WITH\n    (\n        payment_type SMALLINT,\n        description VARCHAR(20) '$.payment_type_desc'\n    );\n\nEND;\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_ldw",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

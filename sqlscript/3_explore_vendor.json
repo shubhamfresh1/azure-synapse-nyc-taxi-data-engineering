@@ -1,0 +1,20 @@
+{
+	"name": "3_explore_vendor",
+	"properties": {
+		"folder": {
+			"name": "nyc-taxi/discovery"
+		},
+		"content": {
+			"query": "-- This is auto-generated code\nUSE nyc_taxi_discovery;\n\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'vendor.csv',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'CSV',\n        HEADER_ROW =TRUE,\n        PARSER_VERSION = '2.0'\n    ) AS [Vendor result];\n\n\n------ store proccesor------\nEXEC sp_describe_first_result_set N'SELECT\n    TOP 100 *\n FROM\n    OPENROWSET(\n        BULK ''vendor.csv'',\n        DATA_SOURCE = ''nyc_taxi_data_raw'',\n        FORMAT = ''CSV'',\n        PARSER_VERSION = ''2.0''\n    ) AS [Vendor result];\n'",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_discovery",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

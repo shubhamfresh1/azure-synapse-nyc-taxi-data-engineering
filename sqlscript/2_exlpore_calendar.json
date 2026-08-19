@@ -1,0 +1,20 @@
+{
+	"name": "2_exlpore_calendar",
+	"properties": {
+		"folder": {
+			"name": "nyc-taxi/discovery"
+		},
+		"content": {
+			"query": "-- VENDOR.CSV\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'calendar.csv',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'CSV',\n        HEADER_ROW = TRUE,\n        FIELDTERMINATOR = ',',\n        PARSER_VERSION = '2.0'\n    ) AS [result]\n\n-----SET DATA TYPE ------- \n\nEXEC sp_describe_first_result_set N'SELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK ''calendar.csv'',\n        DATA_SOURCE = ''nyc_taxi_data_raw'',\n        FORMAT = ''CSV'',\n        HEADER_ROW = TRUE,\n        FIELDTERMINATOR = '','',\n        PARSER_VERSION = ''2.0''\n    ) AS [result]'\n\n------- IDENTIFY MAX LENTH AND SET DATA TAYPES -----\nSELECT\n    MAX(LEN(date_key)) AS date_key,\n    MAX(LEN(date)) AS date,\n    MAX(LEN(year)) AS year,\n    MAX(LEN(month)) AS month,\n    MAX(LEN(day)) AS day,\n    MAX(LEN(day_name)) AS day_name,\n    MAX(LEN(day_of_year)) AS day_of_year,\n    MAX(LEN(week_of_month)) AS week_of_month,\n    MAX(LEN(week_of_year)) AS week_of_year,\n    MAX(LEN(month_name)) AS month_name ,\n      MAX(LEN(year_month)) AS year_month ,\n        MAX(LEN(year_week)) AS year_week \nFROM\n    OPENROWSET(\n        BULK 'https://adlscoursesynapse.dfs.core.windows.net/nyc-taxi-green-data/raw/calendar.csv',\n        FORMAT = 'CSV',\n        HEADER_ROW = TRUE,\n        FIELDTERMINATOR = ',',\n        PARSER_VERSION = '2.0'\n    ) AS [result]\n\n------ SET DATA TYPE ------\n\nSELECT*\nFROM\n    OPENROWSET(\n        BULK 'calendar.csv',\n        DATA_SOURCE = 'nyc_taxi_data_raw'\n        FORMAT = 'CSV',\n        HEADER_ROW = TRUE,\n        FIELDTERMINATOR = ',',\n        PARSER_VERSION = '2.0'\n    )\n   WITH (\n    date_key       INT,\n    date           DATE,\n    year           SMALLINT,\n    month          TINYINT,\n    day            TINYINT,\n    day_name       VARCHAR(10),\n    day_of_year    SMALLINT,\n    week_of_month  TINYINT,\n    week_of_year   TINYINT,\n    month_name     VARCHAR(10),\n    year_week      INT\n)AS [calendar_result]\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_discovery",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"name": "12_joining_Files",
+	"properties": {
+		"folder": {
+			"name": "nyc-taxi/discovery"
+		},
+		"content": {
+			"query": "---joining file taxi zone csv or tri data csv\nUSE nyc_taxi_discovery;\n\n\nUSE nyc_taxi_discovery;\n\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'taxi_zone.csv',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'CSV',\n        HEADER_ROW = TRUE,\n        PARSER_VERSION = '2.0'\n    ) AS taxi_zone;\n\n\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'trip_data_green_parquet/year=2020/month=01/',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'PARQUET'\n) AS trip_data;   \n\n\n\n---- JOIN \n\nSELECT\n    taxi_zone.Borough,\n    COUNT(1) Total_trips_of_Borough\nFROM\n    OPENROWSET(\n        BULK 'taxi_zone.csv',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'CSV',\n        HEADER_ROW = TRUE,\nView\n\nSearch\n\nBronx\n36548\n        PARSER_VERSION = '2.0'\n    ) AS taxi_zone\nJOIN  \n    OPENROWSET(\n        BULK 'trip_data_green_parquet/year=2020/month=01/',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'PARQUET'\n) AS trip_data\nON taxi_zone.LocationID = trip_data.PULocationID \nGROUP BY taxi_zone.Borough\nORDER BY taxi_zone.Borough\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_discovery",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

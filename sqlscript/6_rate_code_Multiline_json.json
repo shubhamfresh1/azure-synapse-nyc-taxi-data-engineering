@@ -1,0 +1,20 @@
+{
+	"name": "6_rate_code_Multiline_json",
+	"properties": {
+		"folder": {
+			"name": "nyc-taxi/discovery"
+		},
+		"content": {
+			"query": "\n-- This is auto-generated code\nUSE nyc_taxi_discovery;\n\nSELECT rate_code_id,rate_code\nFROM\n    OPENROWSET(\n        BULK 'rate_code_multi_line.json',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'CSV',\n        FIELDQUOTE = '0x0b',\n        FIELDTERMINATOR ='0x0b',\n        ROWTERMINATOR = '0x0b'\n    )\n    WITH (\n        JSONDOC varchar(MAX)\n    ) AS rate_code\n CROSS APPLY OPENJSON(JSONDOC ) \n WITH(\n    rate_code_id SMALLINT,\n    rate_code NVARCHAR(MAX)\n\n );  \n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_discovery",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

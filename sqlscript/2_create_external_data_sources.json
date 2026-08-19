@@ -1,0 +1,20 @@
+{
+	"name": "2_create_external_data_sources",
+	"properties": {
+		"folder": {
+			"name": "nyc-taxi/ldw"
+		},
+		"content": {
+			"query": "USE nyc_taxi_ldw;\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name ='nyc_taxi_src')\n  CREATE EXTERNAL DATA SOURCE nyc_taxi_src\n    WITH\n      -- Please note the abfss endpoint when your account\n      ( LOCATION = 'https://adlscoursesynapse.dfs.core.windows.net/nyc-taxi-green-data' \n      ) ;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_ldw",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

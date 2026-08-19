@@ -1,0 +1,36 @@
+{
+	"name": "pl_create_gold_trip_data_agg",
+	"properties": {
+		"activities": [
+			{
+				"name": "Create gold trip data agg",
+				"type": "SynapseNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "1_spark_create_gold_trip_data_green_agg",
+						"type": "NotebookReference"
+					},
+					"snapshot": true,
+					"sparkPool": {
+						"referenceName": "coursepool",
+						"type": "BigDataPoolReference"
+					},
+					"executorSize": "Small",
+					"driverSize": "Small"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2026-08-07T11:06:32Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

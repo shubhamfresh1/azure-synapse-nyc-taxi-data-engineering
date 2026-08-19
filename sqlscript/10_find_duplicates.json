@@ -1,0 +1,20 @@
+{
+	"name": "10_find_duplicates",
+	"properties": {
+		"folder": {
+			"name": "nyc-taxi/discovery"
+		},
+		"content": {
+			"query": "----Find Duplicates Records\nUSE nyc_taxi_discovery;\n\nSELECT \n   LOcationId,\n   COUNT(1) AS total_Count\nFROM\n    OPENROWSET(\n        BULK 'https://adlscoursesynapse.dfs.core.windows.net/nyc-taxi-green-data/raw/taxi_zone.csv',\n        FORMAT = 'CSV',\n        HEADER_ROW = TRUE,\n        PARSER_VERSION = '2.0'\n)AS [result]  \nGROUP BY LocationID\nHAVING COUNT(1) > 1 ;\n\n\nSELECT \n    Borough,\n    COUNT(1) AS NUMBER_CONT\nFROM\n    OPENROWSET(\n        BULK 'https://adlscoursesynapse.dfs.core.windows.net/nyc-taxi-green-data/raw/taxi_zone.csv',\n        FORMAT = 'CSV',\n        HEADER_ROW = TRUE,\n        PARSER_VERSION = '2.0'\n)AS [result]  \nGROUP BY Borough\nHAVING COUNT(1) > 1;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_discovery",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

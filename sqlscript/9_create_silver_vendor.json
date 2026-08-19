@@ -1,0 +1,20 @@
+{
+	"name": "9_create_silver_vendor",
+	"properties": {
+		"folder": {
+			"name": "nyc-taxi/ldw"
+		},
+		"content": {
+			"query": "USE nyc_taxi_ldw\nGO\n\nIF OBJECT_ID('silver.vendor') IS NOT NULL\n    DROP EXTERNAL TABLE silver.vendor\nGO    \n    CREATE EXTERNAL TABLE silver.vendor\n    WITH\n        (\n            DATA_SOURCE = nyc_taxi_src,\n            LOCATION = 'silver/vendor',\n            FILE_FORMAT = parquet_file_format \n        )\n    AS\n    SELECT * FROM bronze.vendor  \n\n\nSELECT * FROM silver.vendor\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_ldw",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
